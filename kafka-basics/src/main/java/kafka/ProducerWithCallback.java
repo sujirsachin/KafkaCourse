@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 import java.util.Random;
 
+// response metadata
 public class ProducerWithCallback {
 
     private static final Logger log = LoggerFactory.getLogger(ProducerWithCallback.class.getSimpleName());
@@ -26,8 +27,8 @@ public class ProducerWithCallback {
             ProducerRecord<String, String> record = new ProducerRecord<>("kafka_test", String.valueOf(random.nextInt(999999999)));
             producer.send(record, (recordMetadata, e) -> {
                 if(e == null){
-                    log.info("Successfully sent record \n Topic: {} \n Partition: {} \n" +
-                            "Offset: {} \n Timestamp {}", recordMetadata.topic(), recordMetadata.partition(),
+                    log.info("Successfully sent Record: {} \n Topic: {} \n Partition: {} \n" +
+                            "Offset: {} \n Timestamp {}", record, recordMetadata.topic(), recordMetadata.partition(),
                             recordMetadata.offset(), recordMetadata.timestamp());
                 } else{
                     log.error("Error occured while sending", e);

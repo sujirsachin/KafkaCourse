@@ -28,8 +28,8 @@ public class ProducerWithKeys {
             ProducerRecord<String, String> record = new ProducerRecord<>("kafka_test", key, String.valueOf(random.nextInt()));
             producer.send(record, (recordMetadata, e) -> {
                 if (e == null) {
-                    log.info("Successfully sent record \n Topic: {} \n Key: {} \n Partition: {} \n" +
-                                    "Offset: {} \n Timestamp {}", recordMetadata.topic(), record.key(), recordMetadata.partition(),
+                    log.info("Successfully sent Record: {} \n Topic: {} \n Partition: {} \n" +
+                                    "Offset: {} \n Timestamp {}", record, recordMetadata.topic(), recordMetadata.partition(),
                             recordMetadata.offset(), recordMetadata.timestamp());
                 } else {
                     log.error("Error occured while sending", e);

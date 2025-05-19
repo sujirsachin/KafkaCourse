@@ -27,6 +27,6 @@ public class Producer {
         }
         producer.flush();
         producer.close();
-
+        log.info("Finished Producer");
     }
 }

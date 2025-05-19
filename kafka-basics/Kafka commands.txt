@@ -1,0 +1,62 @@
+###Kafka commands
+
+# Start server
+kafka-server-start.sh ~/kafka/config/kraft/server.properties 
+
+
+
+# Create topic with 3 partitions   
+kafka-topics.sh --bootstrap-server localhost:9092 --topic kafka_test --create --partitions 3 --replication-factor 1
+
+# List topics
+kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+# Describe a topic
+kafka-topics.sh --bootstrap-server localhost:9092 --topic kafka_test --describe
+
+# Delete a topic
+kafka-topics.sh --bootstrap-server localhost:9092 --topic kafka_test --delete
+
+
+
+## Producer
+
+# producing
+kafka-console-producer.sh --bootstrap-server localhost:9092 --topic kafka_test
+
+# producing with properties
+kafka-console-producer.sh --bootstrap-server localhost:9092 --topic kafka_test --producer-property acks=all
+
+# producing to a non existing topic - would still run (will create new topics)
+kafka-console-producer.sh --bootstrap-server localhost:9092 --topic new_topic
+
+# produce with keys
+kafka-console-producer.sh --bootstrap-server localhost:9092 --topic kafka_test --property parse.key=true --property key.separator=:
+
+
+## Consumer
+
+# consuming
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic kafka_test
+
+# consuming from beginning
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic kafka_test --from-beginning
+
+# display key, values and timestamp in consumer
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic kafka_test --formatter kafka.tools.DefaultMessageFormatter --property print.timestamp=true --property print.key=true --property print.value=true --property print.partition=true --from-beginning
+
+
+
+# Consumer Groups
+
+# start one consumer
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic kafka_test --group my-first-application
+
+# start one producer and start producing
+kafka-console-producer.sh --bootstrap-server localhost:9092 --producer-property partitioner.class=org.apache.kafka.clients.producer.RoundRobinPartitioner --topic third_topic
+
+# start another consumer part of the same group. See messages being spread
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic kafka_test --group my-first-application
+
+# start another consumer part of a different group from beginning
+kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic kafka_test --group my-second-application --from-beginning

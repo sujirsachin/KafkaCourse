@@ -1,9 +1,6 @@
 package kafka;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
@@ -13,10 +10,10 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.Properties;
 
-// Gracefully exits if a consumer is shutdown
-public class ConsumerWithShutdown {
+// CooperativeStickyAssignor
+public class ConsumerWithCooperative {
 
-    private static final Logger log = LoggerFactory.getLogger(ConsumerWithShutdown.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(ConsumerWithCooperative.class.getSimpleName());
     public static void main(String[] args) {
         log.info("Starting Consumer");
         String groupId = "kafka-consumer-group";
@@ -28,7 +25,7 @@ public class ConsumerWithShutdown {
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-
+        props.setProperty(ConsumerConfig.PARTITION_ASSIGNMENT_STRATEGY_CONFIG, CooperativeStickyAssignor.class.getName());
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
 
         final Thread mainThread = Thread.currentThread();
