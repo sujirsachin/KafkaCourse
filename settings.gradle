@@ -1,1 +1,3 @@
 rootProject.name = 'KafkaCourse'
+include 'kafka'
+include 'kafka1'

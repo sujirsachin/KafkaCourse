@@ -1,17 +1,16 @@
 package kafka;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
+import java.util.Random;
 
-public class Producer {
+public class ProducerWithCallback {
 
-    private static final Logger log = LoggerFactory.getLogger(Producer.class.getSimpleName());
+    private static final Logger log = LoggerFactory.getLogger(ProducerWithCallback.class.getSimpleName());
     public static void main(String[] args) {
         log.info("Starting Producer");
         Properties properties = new Properties();
@@ -21,11 +20,25 @@ public class Producer {
 
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
+        for(int i=0; i<20; i++){
+            Random random = new Random();
 
-
-        for(int i=0; i<10; i++){
-            ProducerRecord<String, String> record = new ProducerRecord<>("kafka_test", "hello " +i);
-            producer.send(record);
+            ProducerRecord<String, String> record = new ProducerRecord<>("kafka_test", String.valueOf(random.nextInt(999999999)));
+            producer.send(record, (recordMetadata, e) -> {
+                if(e == null){
+                    log.info("Successfully sent record \n Topic: {} \n Partition: {} \n" +
+                            "Offset: {} \n Timestamp {}", recordMetadata.topic(), recordMetadata.partition(),
+                            recordMetadata.offset(), recordMetadata.timestamp());
+                } else{
+                    log.error("Error occured while sending", e);
+                }
+            });
+            // demo to avoid sticky partitioning
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         producer.flush();
         producer.close();
